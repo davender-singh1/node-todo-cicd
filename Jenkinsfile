@@ -1,39 +1,39 @@
 pipeline {
-    agent { label "dev-server"}
+    agent any
     
     stages {
         
-        stage("code"){
+        stage("Code"){
             steps{
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
-                echo 'bhaiyya code clone ho gaya'
+                git url: "https://github.com/davender-singh1/node-todo-cicd.git", branch: "master"
+                echo 'Code Clone Completed!'
             }
         }
-        stage("build and test"){
+        stage("Build and Test"){
             steps{
-                sh "docker build -t node-app-test-new ."
-                echo 'code build bhi ho gaya'
+                sh "docker build -t node-app ."
+                echo 'Code build done!'
             }
         }
-        stage("scan image"){
+        stage("Scan"){
             steps{
-                echo 'image scanning ho gayi'
+                echo 'Image Scanned'
             }
         }
-        stage("push"){
+        stage("Push to DockerHub"){
             steps{
                 withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker tag node-app-test-new:latest ${env.dockerHubUser}/node-app-test-new:latest"
-                sh "docker push ${env.dockerHubUser}/node-app-test-new:latest"
-                echo 'image push ho gaya'
-                }
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"    
+                sh "docker tag node-app:latest ${env.dockerHubUser}/node-app:latest"
+                sh "docker push ${env.dockerHubUser}/node-app:latest"
+                echo 'Code pushed to DockerHub'
+            }
             }
         }
-        stage("deploy"){
+        stage("Deploy"){
             steps{
                 sh "docker-compose down && docker-compose up -d"
-                echo 'deployment ho gayi'
+                echo 'Code deployed successfully!'
             }
         }
     }
